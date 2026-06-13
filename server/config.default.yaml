@@ -1,0 +1,43 @@
+host: "0.0.0.0"
+port: 8080
+auth_token: "changeme-generate-a-32-char-token-00"
+
+models_dir: "models"
+
+# HuggingFace repos are cached under models/hub/ during setup.
+# After first setup, the server loads them offline (no HF requests on startup).
+
+fastvlm:
+  # One of: llava-fastvithd_1.5b_stage3, llava-fastvithd_7b_stage3
+  checkpoint: "llava-fastvithd_7b_stage3"
+  quantize_bits: 4
+  system_prompt: >
+    You are a helpful vision assistant for smart glasses. Answer in short,
+    naturally spoken sentences. Be concise and direct.
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 256
+
+whisper:
+  model: "mlx-community/whisper-small-mlx"
+
+intent:
+  encoder: "sentence-transformers/all-MiniLM-L6-v2"
+  classifier_path: "models/intent_classifier.joblib"
+
+kokoro:
+  model: "mlx-community/Kokoro-82M-bf16"
+  voice: "af_sarah"
+  speed: 1.0
+  lang: "en-us"
+  output_sample_rate: 24000
+
+ocr:
+  no_image_message: "There's no image to read."
+  audiobook_speed: 0.9
+  paragraph_pause_ms: 500
+  max_paragraph_chars: 480
+
+logging:
+  level: "info"
+  ring_size: 500

@@ -1,0 +1,276 @@
+:root {
+  color-scheme: dark;
+  --bg: #0d1117;
+  --panel: #161b22;
+  --border: #30363d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #58a6ff;
+  --danger: #f85149;
+  --ok: #3fb950;
+  --warn: #d29922;
+  font-family: "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(88, 166, 255, 0.12), transparent 40%),
+    var(--bg);
+  color: var(--text);
+}
+
+.shell {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.hero h1 {
+  margin: 0.2rem 0 0.4rem;
+  font-size: 2rem;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  color: var(--accent);
+}
+
+.subtitle,
+.muted {
+  color: var(--muted);
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+input,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: #010409;
+  color: var(--text);
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+button {
+  border: 1px solid var(--border);
+  background: #21262d;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  cursor: pointer;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: #04101f;
+  font-weight: 600;
+}
+
+button.danger {
+  color: var(--danger);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.status-pill.live {
+  color: var(--ok);
+  border-color: rgba(63, 185, 80, 0.4);
+}
+
+.status-pill.busy {
+  color: var(--warn);
+  border-color: rgba(210, 153, 34, 0.4);
+}
+
+.status-pill.error {
+  color: var(--danger);
+  border-color: rgba(248, 81, 73, 0.4);
+}
+
+.stream-header,
+.queue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stream-header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.meta-card,
+.response-block,
+.queue-block {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem;
+  background: #010409;
+}
+
+.meta-label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.meta-value {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.meta-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+}
+
+.intent-ocr {
+  color: #79c0ff;
+}
+
+.intent-llm {
+  color: #d2a8ff;
+}
+
+.stream-text {
+  min-height: 2rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.audio-queue {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.queue-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.88rem;
+}
+
+.queue-index {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 1.5rem;
+}
+
+.queue-text {
+  line-height: 1.35;
+}
+
+.queue-state {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.queue-state.queued {
+  color: var(--muted);
+}
+
+.queue-state.playing {
+  color: var(--accent);
+  border-color: rgba(88, 166, 255, 0.45);
+}
+
+.queue-state.done {
+  color: var(--ok);
+  border-color: rgba(63, 185, 80, 0.4);
+}
+
+.error {
+  color: var(--danger);
+  margin: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .meta-grid {
+    grid-template-columns: 1fr;
+  }
+}

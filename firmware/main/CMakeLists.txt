@@ -1,0 +1,21 @@
+idf_component_register(
+    SRCS
+        "main.c"
+        "app_config.c"
+        "app_touch.c"
+        "app_audio.c"
+        "app_camera.c"
+        "app_http.c"
+        "app_sse.c"
+    INCLUDE_DIRS "."
+    REQUIRES
+        nvs_flash
+        esp_wifi
+        esp_http_client
+        esp_event
+        driver
+        esp_timer
+        mbedtls
+        json
+        esp_camera
+)

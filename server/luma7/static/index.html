@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vision Glasses</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <p class="eyebrow">Luma7</p>
+      <h1>Vision Glasses</h1>
+      <p class="subtitle">POST a query, stream text and audio back over SSE.</p>
+    </header>
+
+    <section class="panel config-panel">
+      <label>
+        Server URL
+        <input id="serverUrl" type="url" value="" placeholder="http://localhost:8080" />
+      </label>
+      <label>
+        Auth token
+        <input id="authToken" type="password" autocomplete="off" />
+      </label>
+      <button id="saveConfig" type="button">Save settings</button>
+      <span id="serverStatus" class="status-pill">disconnected</span>
+    </section>
+
+    <section class="panel query-panel">
+      <label>
+        Prompt
+        <textarea id="prompt" rows="3" placeholder="What am I looking at?"></textarea>
+      </label>
+      <label class="file-label">
+        Image (optional)
+        <input id="imageFile" type="file" accept="image/*" />
+      </label>
+      <div class="actions">
+        <button id="sendText" type="button" class="primary">Send text query</button>
+        <button id="recordBtn" type="button">Record voice</button>
+        <button id="stopBtn" type="button" class="danger" disabled>Stop</button>
+      </div>
+    </section>
+
+    <section class="panel stream-panel">
+      <div class="stream-header">
+        <h2>Pipeline</h2>
+        <span id="pipelineState" class="status-pill">idle</span>
+      </div>
+
+      <div class="meta-grid">
+        <div class="meta-card">
+          <span class="meta-label">Transcript</span>
+          <p id="transcript" class="meta-value">—</p>
+        </div>
+        <div class="meta-card">
+          <span class="meta-label">Intent</span>
+          <p id="intentLabel" class="meta-value">—</p>
+          <p id="intentConfidence" class="meta-sub muted">—</p>
+        </div>
+      </div>
+
+      <div class="response-block">
+        <span class="meta-label">Spoken response</span>
+        <div id="responseText" class="stream-text"></div>
+      </div>
+
+      <div class="queue-block">
+        <div class="queue-header">
+          <span class="meta-label">Audio queue</span>
+          <span id="queueSummary" class="meta-sub muted">0 chunks</span>
+        </div>
+        <ol id="audioQueue" class="audio-queue"></ol>
+      </div>
+
+      <p id="errorBox" class="error hidden"></p>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

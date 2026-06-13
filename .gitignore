@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+dist/
+build/
+
+# PoC / demo (not part of Luma7 product repo)
+ml-fastvlm/
+
+# Server models and weights (large — download via setup_models.sh)
+server/models/
+server/config.yaml
+
+# Model weight formats (safety net anywhere in repo)
+*.safetensors
+*.bin
+*.gguf
+*.onnx
+*.pt
+*.pth
+*.npz
+*.ckpt
+*.h5
+*.mlmodel
+*.tflite
+
+# ESP-IDF
+firmware/build/
+firmware/sdkconfig
+firmware/sdkconfig.old
+firmware/dependencies.lock
+firmware/managed_components/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
