@@ -49,6 +49,7 @@ class OCRConfig:
     audiobook_speed: float = 0.9
     paragraph_pause_ms: int = 500
     max_paragraph_chars: int = 480
+    section_selection: bool = True
 
 
 @dataclass

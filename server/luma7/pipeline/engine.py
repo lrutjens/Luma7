@@ -11,7 +11,9 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from luma7.audio_utils import float32_to_wav_bytes, wav_bytes_to_base64
-from luma7.pipeline.ocr import run_apple_vision_ocr
+from luma7.pipeline.ocr import run_apple_vision_ocr_lines
+from luma7.pipeline.ocr_region import MiniLMSectionResolver
+from luma7.pipeline.ocr_sections import cluster_lines_into_sections
 from luma7.pipeline.sentence import EOS_MARKER, normalize_ocr_text, split_ocr_text
 from luma7.pipeline.types import (
     AudioMessage,
@@ -64,6 +66,7 @@ class PipelineEngine:
         self.audio_queue: queue.Queue[AudioMessage | None] = queue.Queue()
 
         self._text_chunk_counters: dict[str, int] = {}
+        self._section_resolver: MiniLMSectionResolver | None = None
         self._threads: list[threading.Thread] = []
         self._started = False
         self._models_ready = False
@@ -85,6 +88,8 @@ class PipelineEngine:
         )
 
         self.intent.load()
+        assert self.intent.encoder is not None
+        self._section_resolver = MiniLMSectionResolver(self.intent.encoder)
         self.stt.load()
         mlx_path = ensure_fastvlm_mlx_model(self.config)
         self.llm.model_path = mlx_path
@@ -122,6 +127,33 @@ class PipelineEngine:
         if session is None:
             raise RuntimeError(f"unknown session {session_id}")
         return session
+
+    def _select_ocr_text(self, session, transcript: str, lines) -> str:
+        if not lines:
+            return ""
+        if not self.config.ocr.section_selection or self._section_resolver is None:
+            return "\n".join(line.text for line in lines).strip()
+
+        sections = cluster_lines_into_sections(lines)
+        session.emit_ocr_sections([section.to_dict() for section in sections])
+        selection = self._section_resolver.resolve(transcript, sections)
+        if selection.section is not None:
+            session.emit_ocr_section_selected(
+                {
+                    "section_id": selection.section.id,
+                    "mode": selection.mode,
+                    "score": round(selection.score, 4),
+                    "reason": selection.reason,
+                    "role": selection.section.role,
+                    "bbox": {
+                        "x": round(selection.section.x, 4),
+                        "y": round(selection.section.y, 4),
+                        "width": round(selection.section.width, 4),
+                        "height": round(selection.section.height, 4),
+                    },
+                }
+            )
+        return selection.text
 
     def _enqueue_tts(
         self,
@@ -179,8 +211,18 @@ class PipelineEngine:
                         self._enqueue_tts(job.session_id, EOS_MARKER)
                     else:
                         session.emit_status(PipelineState.READING)
-                        text, ocr_ms = run_apple_vision_ocr(job.jpeg_bytes)
-                        logger.info("Session %s OCR done in %.1f ms", job.session_id, ocr_ms)
+                        lines, ocr_ms = run_apple_vision_ocr_lines(job.jpeg_bytes)
+                        logger.info(
+                            "Session %s OCR done in %.1f ms (%d lines)",
+                            job.session_id,
+                            ocr_ms,
+                            len(lines),
+                        )
+                        text = self._select_ocr_text(
+                            session,
+                            transcript,
+                            lines,
+                        )
                         normalized = normalize_ocr_text(text)
                         chunks = split_ocr_text(
                             normalized,

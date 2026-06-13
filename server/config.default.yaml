@@ -37,6 +37,7 @@ ocr:
   audiobook_speed: 0.9
   paragraph_pause_ms: 500
   max_paragraph_chars: 480
+  section_selection: true
 
 logging:
   level: "info"

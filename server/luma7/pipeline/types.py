@@ -104,6 +104,16 @@ class SessionContext:
             )
         )
 
+    def emit_ocr_sections(self, sections: list[dict]) -> None:
+        if self._closed or self.cancel.is_set():
+            return
+        self.sse_queue.put(("ocr_sections", json.dumps({"sections": sections})))
+
+    def emit_ocr_section_selected(self, selection: dict) -> None:
+        if self._closed or self.cancel.is_set():
+            return
+        self.sse_queue.put(("ocr_section_selected", json.dumps(selection)))
+
     def emit_text_chunk(self, text: str, index: int) -> None:
         if self._closed or self.cancel.is_set():
             return

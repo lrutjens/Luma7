@@ -16,6 +16,9 @@ const els = {
   intentLabel: document.getElementById("intentLabel"),
   intentConfidence: document.getElementById("intentConfidence"),
   responseText: document.getElementById("responseText"),
+  ocrSectionsBlock: document.getElementById("ocrSectionsBlock"),
+  ocrSectionSelected: document.getElementById("ocrSectionSelected"),
+  ocrSectionsList: document.getElementById("ocrSectionsList"),
   audioQueue: document.getElementById("audioQueue"),
   queueSummary: document.getElementById("queueSummary"),
   errorBox: document.getElementById("errorBox"),
@@ -80,6 +83,9 @@ function resetStreamUi() {
   els.intentLabel.className = "meta-value";
   els.intentConfidence.textContent = "—";
   els.responseText.textContent = "";
+  els.ocrSectionsBlock.classList.add("hidden");
+  els.ocrSectionSelected.textContent = "—";
+  els.ocrSectionsList.innerHTML = "";
   audioQueue.length = 0;
   renderAudioQueue();
 }
@@ -90,6 +96,28 @@ function setIntent(intent, confidence, route) {
   els.intentLabel.className = `meta-value intent-${(intent || "").toLowerCase()}`;
   const pct = typeof confidence === "number" ? `${Math.round(confidence * 100)}%` : "—";
   els.intentConfidence.textContent = `Confidence ${pct} · route ${route || intent}`;
+}
+
+function renderOcrSections(sections) {
+  if (!sections || sections.length === 0) {
+    els.ocrSectionsBlock.classList.add("hidden");
+    els.ocrSectionsList.innerHTML = "";
+    return;
+  }
+  els.ocrSectionsBlock.classList.remove("hidden");
+  els.ocrSectionsList.innerHTML = sections
+    .map((section) => {
+      const bbox = section.bbox || {};
+      const coords = `y ${(bbox.y ?? 0).toFixed(2)} · h ${(bbox.height ?? 0).toFixed(2)}`;
+      return `<li class="ocr-section-item"><strong>#${section.id}</strong> <span class="ocr-section-role">${section.role || "block"}</span><span class="ocr-section-coords">${coords}</span><p>${section.preview || ""}</p></li>`;
+    })
+    .join("");
+}
+
+function setOcrSectionSelected(payload) {
+  if (!payload) return;
+  const label = payload.section_id >= 0 ? `#${payload.section_id}` : "all";
+  els.ocrSectionSelected.textContent = `Selected ${label} (${payload.role || payload.mode}) · ${payload.reason || "match"} · score ${payload.score ?? "—"}`;
 }
 
 function appendResponseText(text) {
@@ -305,6 +333,16 @@ function openStream(sessionId) {
   eventSource.addEventListener("intent", (event) => {
     const payload = JSON.parse(event.data);
     setIntent(payload.intent, payload.confidence, payload.route);
+  });
+
+  eventSource.addEventListener("ocr_sections", (event) => {
+    const payload = JSON.parse(event.data);
+    renderOcrSections(payload.sections || []);
+  });
+
+  eventSource.addEventListener("ocr_section_selected", (event) => {
+    const payload = JSON.parse(event.data);
+    setOcrSectionSelected(payload);
   });
 
   eventSource.addEventListener("text_chunk", (event) => {
